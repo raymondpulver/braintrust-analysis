@@ -26,9 +26,9 @@ def upgrade():
         sa.Column("low", sa.FLOAT(8)),
         sa.Column("close", sa.FLOAT(8)),
         sa.Column("volume", sa.FLOAT(8)),
-        sa.Column("optional1", sa.FLOAT(8))
+        sa.Column("optional1", sa.FLOAT(8)),
     )
-   
+
     op.create_table(
         "perpfunding",
         sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
@@ -37,7 +37,7 @@ def upgrade():
         sa.Column("symbol", sa.CHAR(12), nullable=False),
         sa.Column("ts", sa.Integer, nullable=False),
         sa.Column("value", sa.FLOAT(8), nullable=False),
-        sa.Column("optional1", sa.FLOAT(8))
+        sa.Column("optional1", sa.FLOAT(8)),
     )
 
     pass
