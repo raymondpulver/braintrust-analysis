@@ -2,7 +2,8 @@
 import requests, json, datetime, pytz, time
 from threading import Lock
 import _thread
-import hmac, hashlib, utils.misc as misc, math
+import hmac, hashlib, math
+from misc import getTimeStamp
 import logging
 
 logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ class binanceRateLimits:
         Returns False if the counter is above an acceptable limit."""
         #increment counters
         blnOutput = True
-        nowTS = misc.getTimeStamp()
+        nowTS = getTimeStamp()
         self.lock.acquire() 
         if weightType == 'REQUESTS':
             for d in self.rateLimits['REQUESTS']:
@@ -314,7 +315,7 @@ class binance:
         """If orderId is set, it will get orders >= that orderId. Otherwise most recent orders are returned."""
         rateLimitOK = self.rateLimits.update("ORDERS", 5)
         if rateLimitOK:
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             
             payload = {'symbol':symbol, 'timestamp': ts}
             if orderId != None:
@@ -347,7 +348,7 @@ class binance:
             if price == 0 and not ordType == 'MARKET':
                 logger.error('price indicates Market order order but ordType is not market.' )
                 return -1
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             
             #Apply filters to price and quantity
             price, quantity = self._applyFilters(price, quantity, symbol)
@@ -415,7 +416,7 @@ class binance:
         """
         rateLimitOK = self.rateLimits.update("ORDERS", 1)
         if rateLimitOK:
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             payload = {'symbol':symbol, 'orderId': orderId, 'timestamp': ts}            
             
             authReq = self._prepareAuthRequest(self.URL + '/api/v3/order', payload, reqType  = 'GET')  
@@ -436,7 +437,7 @@ class binance:
         """Returns a list of the orderIDs of the canceled orders."""
         rateLimitOK = self.rateLimits.update("ORDERS", 1)
         if rateLimitOK:
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             payload = {'symbol':symbol, 'orderId': orderID, 'timestamp': ts}            
             
             authReq = self._prepareAuthRequest(self.URL + '/api/v3/order', payload, reqType  = 'DELETE')  
@@ -475,7 +476,7 @@ class binance:
         """
         rateLimitOK = self.rateLimits.update("ORDERS", 1)
         if rateLimitOK:
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             payload = {'timestamp': ts}            
             if symbol:
                 payload.update({'symbol': symbol})
@@ -524,7 +525,7 @@ class binance:
       """
         rateLimitOK = self.rateLimits.update("ORDERS", 5)
         if rateLimitOK:
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             payload = {'timestamp': ts}            
                        
             authReq = self._prepareAuthRequest(self.URL + '/api/v3/account', payload, reqType  = 'GET')  
@@ -570,7 +571,7 @@ class binance:
         """
         rateLimitOK = self.rateLimits.update("ORDERS", 1)
         if rateLimitOK:
-            ts = int((misc.getTimeStamp() + self.timeStampOffset) * 1000)
+            ts = int((getTimeStamp() + self.timeStampOffset) * 1000)
             payload = {'timestamp': ts, 'symbol': symbol}            
             if startTime != None:
                 payload['startTime'] = startTime
@@ -596,7 +597,7 @@ class binance:
         def processQuote(r):
             d = {'bidPrice': float(r['bidPrice']), 'bidQty': float(r['bidQty']), 'askPrice': float(r['askPrice']), 
                  'askQty': float(r['askQty']),
-                 'timeStamp': misc.getTimeStamp()}
+                 'timeStamp': getTimeStamp()}
             return r['symbol'], d
         
         sleepAmount = 60.0/requestPerMinute
