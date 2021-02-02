@@ -1,6 +1,6 @@
 attrs==19.3.0
 backcall==0.1.0
-bleach==3.1.5
+bleach==3.3.0
 braintrust-defi @ file:///mnt/braintruststorage/braintrust-defi
 certifi==2020.4.5.2
 chardet==3.0.4
